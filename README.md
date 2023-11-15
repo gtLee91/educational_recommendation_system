@@ -49,10 +49,11 @@ This project utilises deep learning and reinforcement learning to provide person
 **testing.py, testing_env.py, testing_sq_dataset.py**
 - These codes are created to conduct cold-start tests.
 
-## solve problem
+## if you have data load problem
 If you cannot access the database and retrieve the data, you can use a CSV file to load the data, as described in the rs_engine.ipynb
 If you replace the code in merge_data.py with the following, you can load the data from a CSV file.
-'''
+
+```
   import pandas as pd
   
   cs_data_csv = pd.read_csv('data/course_information.csv')
@@ -87,19 +88,18 @@ If you replace the code in merge_data.py with the following, you can load the da
   merged_df = merged_df.sort_values(["user","rating"]).fillna(0)
   merged_df = merged_df.reset_index(drop=True)
   print(merged_df.head(10))
-'''
-
+```
 ## Training DRL model
-'''
+```
   %run train.py
-'''
+```
 
 ## Evaluation DRL model
-'''
+```
   %run evaluation.py
-'''
+```
 
 ## cold-start test
-'''
+```
   %run testing.py
-'''
+```
