@@ -49,57 +49,57 @@ This project utilises deep learning and reinforcement learning to provide person
 **testing.py, testing_env.py, testing_sq_dataset.py**
 - These codes are created to conduct cold-start tests.
 
-##solve problem
+## solve problem
 If you cannot access the database and retrieve the data, you can use a CSV file to load the data, as described in the rs_engine.ipynb
 If you replace the code in merge_data.py with the following, you can load the data from a CSV file.
 '''
-import pandas as pd
-
-cs_data_csv = pd.read_csv('data/course_information.csv')
-cs_data = pd.DataFrame(cs_data_csv)
-cs_data = cs_data.drop(['cs_content', 'cs_rating'], axis=1)
-cs_data.rename(columns={'cs_num': 'item'}, inplace=True)
-
-cs_rating = pd.read_csv('data/user_ratings.csv')
-cs_rating_df = pd.DataFrame(cs_rating)
-cs_rating_df.rename(columns={'UserID': 'user'}, inplace=True)
-cs_rating_df.rename(columns={'Rating': 'rating'}, inplace=True)
-cs_rating_df.rename(columns={'Timestamp': 'timestamp'}, inplace=True)
-cs_rating_df.rename(columns={'CourseID': 'item'}, inplace=True)
-
-user_profile = pd.read_csv('data/user_profiles.csv')
-user_profile_df = pd.DataFrame(user_profile)
-user_profile_df.rename(columns={'UserID': 'user'}, inplace=True)
-user_profile_df.rename(columns={'PreferredCategory': 'pf_category'}, inplace=True)
-user_profile_df.rename(columns={'PreferredTopic': 'pf_topic'}, inplace=True)
-user_profile_df.rename(columns={'Level': 'pf_level'}, inplace=True)
-user_profile_df.rename(columns={'PreferredStyle': 'pf_style'}, inplace=True)
-user_profile_df.rename(columns={'AimScore': 'aimscore'}, inplace=True)
-user_profile_df.rename(columns={'Gender': 'gender'}, inplace=True)
-user_profile_df.rename(columns={'Age': 'age'}, inplace=True)
-
-merged_df = pd.merge(cs_data, cs_rating_df, on='item', how='inner')
-merged_df = pd.merge(merged_df, user_profile_df, on='user', how='inner')
-
-desired_order = ['user','item','rating','cs_title','cs_category','cs_topic','cs_style','cs_level','pf_category','pf_topic','pf_style','pf_level','aimscore', 'age','gender','timestamp']
-merged_df = merged_df[desired_order]
-
-merged_df = merged_df.sort_values(["user","rating"]).fillna(0)
-merged_df = merged_df.reset_index(drop=True)
-print(merged_df.head(10))
+  import pandas as pd
+  
+  cs_data_csv = pd.read_csv('data/course_information.csv')
+  cs_data = pd.DataFrame(cs_data_csv)
+  cs_data = cs_data.drop(['cs_content', 'cs_rating'], axis=1)
+  cs_data.rename(columns={'cs_num': 'item'}, inplace=True)
+  
+  cs_rating = pd.read_csv('data/user_ratings.csv')
+  cs_rating_df = pd.DataFrame(cs_rating)
+  cs_rating_df.rename(columns={'UserID': 'user'}, inplace=True)
+  cs_rating_df.rename(columns={'Rating': 'rating'}, inplace=True)
+  cs_rating_df.rename(columns={'Timestamp': 'timestamp'}, inplace=True)
+  cs_rating_df.rename(columns={'CourseID': 'item'}, inplace=True)
+  
+  user_profile = pd.read_csv('data/user_profiles.csv')
+  user_profile_df = pd.DataFrame(user_profile)
+  user_profile_df.rename(columns={'UserID': 'user'}, inplace=True)
+  user_profile_df.rename(columns={'PreferredCategory': 'pf_category'}, inplace=True)
+  user_profile_df.rename(columns={'PreferredTopic': 'pf_topic'}, inplace=True)
+  user_profile_df.rename(columns={'Level': 'pf_level'}, inplace=True)
+  user_profile_df.rename(columns={'PreferredStyle': 'pf_style'}, inplace=True)
+  user_profile_df.rename(columns={'AimScore': 'aimscore'}, inplace=True)
+  user_profile_df.rename(columns={'Gender': 'gender'}, inplace=True)
+  user_profile_df.rename(columns={'Age': 'age'}, inplace=True)
+  
+  merged_df = pd.merge(cs_data, cs_rating_df, on='item', how='inner')
+  merged_df = pd.merge(merged_df, user_profile_df, on='user', how='inner')
+  
+  desired_order = ['user','item','rating','cs_title','cs_category','cs_topic','cs_style','cs_level','pf_category','pf_topic','pf_style','pf_level','aimscore', 'age','gender','timestamp']
+  merged_df = merged_df[desired_order]
+  
+  merged_df = merged_df.sort_values(["user","rating"]).fillna(0)
+  merged_df = merged_df.reset_index(drop=True)
+  print(merged_df.head(10))
 '''
 
 ## Training DRL model
 '''
-%run train.py
+  %run train.py
 '''
 
 ## Evaluation DRL model
 '''
-%run evaluation.py
+  %run evaluation.py
 '''
 
 ## cold-start test
 '''
-%run testing.py
+  %run testing.py
 '''
