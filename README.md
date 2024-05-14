@@ -70,19 +70,19 @@ This project utilises meta-learning, deep learning and reinforcement learning to
 
 1. MySQL Installation: First, you need to install the MySQL Database Management System. You can download it from the official website of MySQL (https://dev.mysql.com/downloads/). After installation, start the MySQL server.
 
-2. Database Creation: Connect to the MySQL server and create a database. Typically, you can perform this task using GUI tools like MySQL Workbench.
+2. Database Creation: Connect to the MySQL server and create a database. Typically, you can perform this task using GUI tools like MySQL Workbench.<br>
 ![MySQL connection](images/setup1.png)
 
-3. click the 'Data import/Restore' in the Administration window
+3. click the 'Data import/Restore' in the Administration window.<br>
 ![MySQL Data import](images/setup2.png)
 
-4. Select 'Import from Self-Contained File' option and select SQL file
+4. Select 'Import from Self-Contained File' option and select SQL file.<br>
 ![MySQL Data import](images/setup3.png)
 
-5. Select schema from 'Default Target Scheme'; if there is no existing Scheme, click the 'new' button to create a new schema.
+5. Select schema from 'Default Target Scheme'; if there is no existing Scheme, click the 'new' button to create a new schema.<br>
 ![MySQL Data import](images/setup4.png)
 
-6. Finally, click the 'start import' button
+6. Finally, click the 'start import' button.<br>
 ![MySQL Data import](images/setup5.png)
 
 ![MySQL Data import](images/setup6.png)
@@ -137,7 +137,10 @@ If you replace the code in merge_data.py with the following, you can load the da
 
 ```
 ## Attention
-To actually use this code for the recommendation system, you need to input your MYSQL server connection information into the "db_uri" variable in the format of "mysql+mysqlconnector://(username):(password)@(hostname):(port number)/(Schema name)" as shown in the diagram below. You must modify the "db_uri" variable in the files 'merge_data.py', 'MAML_part.py', 'ts_testing.py', 'web_app_run.py', 'web_profile.py', 'web_log.py', and 'web_admin_CM.py'.
+To actually use this code for the recommendation system, you need to input your MYSQL server connection information into the "db_uri" variable in the format of <br>
+"mysql+mysqlconnector://(username):(password)@(hostname):(port number)/(Schema name)" <br>
+as shown in the diagram below. <br>
+You must modify the "db_uri" variable in the files 'merge_data.py', 'MAML_part.py', 'ts_testing.py', 'web_app_run.py', 'web_profile.py', 'web_log.py', and 'web_admin_CM.py'.<br>
 
 ![MySQL Data import](images/attention.png)
 
