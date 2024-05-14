@@ -68,7 +68,7 @@ This project utilises meta-learning, deep learning and reinforcement learning to
 
 ## How to import SQL files
 
-![image](https://github.com/gtLee91/educational_recommendation_system/setup/setup1.png)
+![image](images/setup1.png)
 
 
 
