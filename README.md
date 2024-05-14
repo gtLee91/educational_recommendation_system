@@ -68,12 +68,29 @@ This project utilises meta-learning, deep learning and reinforcement learning to
 
 ## How to import SQL files
 
-![image](images/setup1.png)
+1. MySQL Installation: First, you need to install the MySQL Database Management System. You can download it from the official website of MySQL (https://dev.mysql.com/downloads/). After installation, start the MySQL server.
+
+2. Database Creation: Connect to the MySQL server and create a database. Typically, you can perform this task using GUI tools like MySQL Workbench.
+![MySQL connection](images/setup1.png)
+
+3. click the 'Data import/Restore' in the Administration window
+![MySQL Data import](images/setup2.png)
+
+4. Select 'Import from Self-Contained File' option and select SQL file
+![MySQL Data import](images/setup3.png)
+
+5. Select schema from 'Default Target Scheme'; if there is no existing Scheme, click the 'new' button to create a new schema.
+![MySQL Data import](images/setup4.png)
+
+6. Finally, click the 'start import' button
+![MySQL Data import](images/setup5.png)
+
+![MySQL Data import](images/setup6.png)
 
 
 
 ## if you have data load problem
-If you cannot access the database and retrieve the data, you can use a CSV file to load the data, as described in the rs_engine.ipynb
+If you cannot access the database and retrieve the data, you can use a CSV file to load the data.
 If you replace the code in merge_data.py with the following, you can load the data from a CSV file.
 
 ```
@@ -81,16 +98,16 @@ If you replace the code in merge_data.py with the following, you can load the da
   
   cs_data_csv = pd.read_csv('data/course_information.csv')
   cs_data = pd.DataFrame(cs_data_csv)
-  cs_data = cs_data.drop(['cs_content', 'cs_rating'], axis=1)
+  cs_data = cs_data.drop(['cs_content'], axis=1)
   cs_data.rename(columns={'cs_num': 'item'}, inplace=True)
-  
+    
   cs_rating = pd.read_csv('data/user_ratings.csv')
   cs_rating_df = pd.DataFrame(cs_rating)
   cs_rating_df.rename(columns={'UserID': 'user'}, inplace=True)
   cs_rating_df.rename(columns={'Rating': 'rating'}, inplace=True)
   cs_rating_df.rename(columns={'Timestamp': 'timestamp'}, inplace=True)
   cs_rating_df.rename(columns={'CourseID': 'item'}, inplace=True)
-  
+    
   user_profile = pd.read_csv('data/user_profiles.csv')
   user_profile_df = pd.DataFrame(user_profile)
   user_profile_df.rename(columns={'UserID': 'user'}, inplace=True)
@@ -101,17 +118,29 @@ If you replace the code in merge_data.py with the following, you can load the da
   user_profile_df.rename(columns={'AimScore': 'aimscore'}, inplace=True)
   user_profile_df.rename(columns={'Gender': 'gender'}, inplace=True)
   user_profile_df.rename(columns={'Age': 'age'}, inplace=True)
-  
+    
   merged_df = pd.merge(cs_data, cs_rating_df, on='item', how='inner')
   merged_df = pd.merge(merged_df, user_profile_df, on='user', how='inner')
-  
-  desired_order = ['user','item','rating','cs_title','cs_category','cs_topic','cs_style','cs_level','pf_category','pf_topic','pf_style','pf_level','aimscore', 'age','gender','timestamp']
+    
+  desired_order = ['user','item','rating','cs_title','cs_category','cs_topic','cs_style','cs_level','pf_category','pf_topic','pf_style','pf_level','aimscore','timestamp']
   merged_df = merged_df[desired_order]
-  
+    
   merged_df = merged_df.sort_values(["user","rating"]).fillna(0)
   merged_df = merged_df.reset_index(drop=True)
-  print(merged_df.head(10))
+  
+  seq_merged_df = pd.read_csv('data/user_ch_profiles_ratings_log.csv')
+  seq_merged_df = pd.concat([seq_merged_df, merged_df], ignore_index=True)
+  seq_merged_df = seq_merged_df[desired_order]
+  
+  seq_merged_df = seq_merged_df.sort_values(by=['user', 'timestamp', 'item' ])
+  seq_merged_df = seq_merged_df.reset_index(drop=True)
+
 ```
+## Attention
+To actually use this code for the recommendation system, you need to input your MYSQL server connection information into the "db_uri" variable in the format of "mysql+mysqlconnector://(username):(password)@(hostname):(port number)/(Schema name)" as shown in the diagram below. You must modify the "db_uri" variable in the files 'merge_data.py', 'MAML_part.py', 'ts_testing.py', 'web_app_run.py', 'web_profile.py', 'web_log.py', and 'web_admin_CM.py'.
+
+![MySQL Data import](images/attention.png)
+
 
 ## Training and Evaluation MAML model
 ```
