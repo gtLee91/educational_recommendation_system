@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>User Profile</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: top;
+            flex-direction: column;
+            margin: 0;
+            margin-left: 20px;
+            margin-top: 20px;
+            height: 100vh;
+        }
+        form div {
+            margin-bottom: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        th:nth-child(1),
+        td:nth-child(1) {
+            width: 180px; /* 너비 조정 */
+        }
+                /* 모달 스타일 */
+        .modal {
+            display: none; /* 모달 숨김 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+        }
+        .mybtn{
+        background: rgba(0,0,0,0.5);
+        }
+    </style>
+
+</head>
+<body>
+    <div>
+        <h2>User Profile</h2>
+    </div>
+    <div>
+        <table>
+            <tr>
+                <th>Attribute</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Gender</td>
+                <td>{{ pf_result.iloc[0]['Gender'] }}</td>
+            </tr>
+            <tr>
+                <td>Age</td>
+                <td>{{ pf_result.iloc[0]['Age'] }}</td>
+            </tr>
+            <tr>
+                <td>Preferred Category</td>
+                <td>{{ pf_result.iloc[0]['PreferredCategory'] }}</td>
+            </tr>
+            <tr>
+                <td>Preferred Topic</td>
+                <td>{{ pf_result.iloc[0]['PreferredTopic'] }}</td>
+            </tr>
+            <tr>
+                <td>Level</td>
+                <td>{{ pf_result.iloc[0]['Level'] }}</td>
+            </tr>
+            <tr>
+                <td>Preferred Style</td>
+                <td>{{ pf_result.iloc[0]['PreferredStyle'] }}</td>
+            </tr>
+            <tr>
+                <td>Aim Score</td>
+                <td>{{ pf_result.iloc[0]['AimScore'] }}</td>
+            </tr>
+        </table>
+    </div>
+    <!-- 프로필 수정 버튼 -->
+    <div style="margin-top: 20px;">
+        <button style="width: fit-content;" class="btn btn-block btn-dark  mybtn link" onclick="openModalAndUpdate()">Edit Profile</button>
+    </div>
+    
+
+    <!-- 모달 -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <!-- 모달 내용 -->
+            <span onclick="closeModal()" style="text-align: right; cursor:pointer;">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="updateprofile" action="/updata_profile" method="POST">
+                <input type="hidden" id="user_id" name="user_id" value="{{ pf_result.iloc[0]['UserID'] }}">
+                <div class="form-group">
+                    <input type="text" id="age" name="age" placeholder="Age" class="form-control">
+                </div>
+                <div class="form-group">
+                    <select id="testname" name="testname" placeholder="testname" class="form-control" onchange="updateAimscoreOptions()">
+                        <option value="ielts">IELTS</option>
+                        <option value="pte">PTE</option>
+                    </select>
+                </div>       
+                <div class="form-group">
+                    <select id="aimscore" name="aimscore" placeholder="Aimscore" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <select id="style" name="style" placeholder="Study Style" class="form-control">
+                        <option value="example">Example</option>
+                        <option value="explanation">Explanation</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="level" name="level" placeholder="User Study Level" class="form-control">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <div style="margin-left: 5px;">
+                    <label for="topic">Perferred Topic</label>
+                    <div>
+                        <label><input type="checkbox" name="topic" value="writing"> writing</label>
+                        <label><input type="checkbox" name="topic" value="reading"> reading</label>
+                        <label><input type="checkbox" name="topic" value="speaking"> speaking</label><br>
+                        <label><input type="checkbox" name="topic" value="listening"> listening</label>
+                        <label><input type="checkbox" name="topic" value="vocabulary"> vocabulary</label>
+                        <label><input type="checkbox" name="topic" value="grammar"> grammar</label><br>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <button style="width: fit-content; " class="btn btn-block btn-dark  mybtn link" type="submit">Profile Update</button>
+                </div>
+                
+            </form>
+            
+        </div>
+    </div>
+</body>
+</html>

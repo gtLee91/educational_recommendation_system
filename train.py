@@ -16,7 +16,7 @@ seq_data = seq_dataset(user_df_train, sequence_length)
 batch_size = 128
 data_loader = DataLoader(seq_data, batch_size=batch_size, shuffle=False)
 
-input_size = 23
+input_size = 20
 conv_channels = 128
 hidden_size = 128
 num_layers = 1
@@ -26,13 +26,13 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = LSTMActorCritic(input_size, conv_channels, hidden_size, num_layers, output_size).to(device)
 critic_criterion = nn.MSELoss()
 actor_criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.00002)
+optimizer = optim.Adam(model.parameters(), lr=0.0002)
 
 # training loop 
 critic_losses = []
 actor_losses = []
 accuracies = []
-num_epochs = 60
+num_epochs = 50
 for epoch in tqdm.tqdm(range(num_epochs)):
     env = Environment(data_loader)
     total_critic_loss = 0
@@ -43,13 +43,15 @@ for epoch in tqdm.tqdm(range(num_epochs)):
 
     while not done:
         optimizer.zero_grad()
+
         policy_dist, value_est, st = model(state)
 
         action = torch.multinomial(policy_dist, 1)
-        next_state, reward, count, done = env.step(action)
+        next_state, reward, exploration_reward, count, done = env.step(action)
         
         actor_loss = actor_criterion(policy_dist, reward.long())
-        critic_loss = critic_criterion(value_est, reward.unsqueeze(1))
+        combined_reward = reward + exploration_reward
+        critic_loss = critic_criterion(value_est, combined_reward.unsqueeze(1))
 
         actor_loss.backward(retain_graph=True)
         critic_loss.backward()
@@ -60,13 +62,15 @@ for epoch in tqdm.tqdm(range(num_epochs)):
         total_actor_loss += actor_loss.item()
         total_count += count
 
+        if done == 1:
+            last_num = policy_dist.size(0)
         if done == 0:
             state = next_state
             env.reset()
     
     average_critic_loss = total_critic_loss / len(data_loader)
     average_actor_loss = total_actor_loss / len(data_loader)
-    accuracy = total_count / (((len(data_loader)-1) * 128) + 86)
+    accuracy = total_count / (((len(data_loader)-1) * 128) + last_num)
     critic_losses.append(average_critic_loss)
     actor_losses.append(average_actor_loss)
     accuracies.append(accuracy)
@@ -78,7 +82,7 @@ folder_path = 'trained_model'
 torch.save({
     'drl_model_state_dict': model.state_dict(),
     'drl_optimizer_state_dict': optimizer.state_dict(),
-},  os.path.join(folder_path, 'drl_model_1.pth'))
+},  os.path.join(folder_path, 'drl_model_7.pth'))
 
 # critic loss
 plt.figure()

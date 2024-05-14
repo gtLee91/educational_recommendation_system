@@ -12,22 +12,28 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, f1_score
 
 sequence_length = 3
 test_lstm_seq_data = seq_dataset(user_df_test, sequence_length)
+num_data_rows = user_df_test.shape[0]
+print("The number of data rows in user_df_test:", num_data_rows)
 
 batch_size = 128
 test_lstm_data_loader = DataLoader(test_lstm_seq_data, batch_size=batch_size, shuffle=False)
 
+num_batches = len(test_lstm_data_loader)
+print("The number of batches in test_lstm_data_loader:", num_batches)
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-input_size = 23
+#input_size = 23
+input_size = 20
 conv_channels = 128
 hidden_size = 128
 num_layers = 1
 output_size = 1
 
 t_model = LSTMActorCritic(input_size, conv_channels, hidden_size, num_layers, output_size).to(device)
-t_optimizer = optim.Adam(t_model.parameters(), lr=0.00002)
+t_optimizer = optim.Adam(t_model.parameters(), lr=0.0002)
 
-checkpoint = torch.load('trained_model/drl_model_1.pth')
+checkpoint = torch.load('trained_model/drl_model_7.pth')
 t_model.load_state_dict(checkpoint['drl_model_state_dict'])
 t_optimizer.load_state_dict(checkpoint['drl_optimizer_state_dict'])
 
@@ -54,12 +60,19 @@ with torch.no_grad():
 
         action = torch.argmax(policy_dist, dim=1)
 
-        next_state, reward, count, done = env.step(action)
+        next_state, reward, exploration_reward, count, done = env.step(action)
         total_count += count
         total_size += policy_dist.size(0)
         
-        true_labels.extend(reward.cpu().numpy())  
-        predicted_labels.extend(action.cpu().numpy())  
+        true_labels.extend(reward.cpu().numpy())
+        predicted_labels.extend(action.cpu().numpy())
+
+        last_num = policy_dist.size(0)
+
+        if done == 1:  
+            weight = (last_num / 128)
+        else:  
+            weight = 1.0  
 
         batch_accuracy = count / policy_dist.size(0)
         batch_RMSE = mean_squared_error(reward, action, squared=False)
@@ -67,8 +80,8 @@ with torch.no_grad():
         batch_F1 = f1_score(reward, action, average='micro')
 
         batch_acc.append(batch_accuracy)
-        batch_rmse.append(batch_RMSE)
-        batch_mae.append(batch_MAE)
+        batch_rmse.append(batch_RMSE * weight)
+        batch_mae.append(batch_MAE * weight)
         batch_f1score.append(batch_F1)
 
         if done == 1:
@@ -81,9 +94,11 @@ with torch.no_grad():
     # accuracy
     eval_accuracy = total_count / (((len(test_lstm_data_loader)-1)*128)+last_num)
     # RMSE
-    rmse = mean_squared_error(true_labels, predicted_labels, squared=False)
+    #rmse = mean_squared_error(true_labels, predicted_labels, squared=False)
+    rmse = sum(batch_rmse) / len(test_lstm_data_loader)
     # MAE
-    mae = mean_absolute_error(true_labels, predicted_labels)
+    #mae = mean_absolute_error(true_labels, predicted_labels)
+    mae = sum(batch_mae) / len(test_lstm_data_loader)
     # F1 score
     f1 = f1_score(true_labels, predicted_labels, average='micro')
 

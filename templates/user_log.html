@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>User Profile</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: top;
+            flex-direction: column;
+            margin: 0;
+            margin-left: 20px;
+            margin-top: 20px;
+            
+        }
+        form div {
+            margin-bottom: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 500px; /* 너비 조정 */
+        }
+                /* 모달 스타일 */
+        .rc_modal {
+            display: none; /* 모달 숨김 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .rc_modal_content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+    </style>
+
+</head>
+<body>
+    <h2>User rating log Results</h2>
+    <div name="log_result_body">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Topic</th>
+                    <th>Level</th>
+                    <th>Preferred Style</th>
+                    <th>User rating</th>
+                    <th>Change rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in log_results.iterrows() %}
+                <tr>
+                    <td>{{ row['item'] }}</td>
+                    <td>{{ row['cs_title'] }}</td>
+                    <td>{{ row['cs_category'] }}</td>
+                    <td>{{ row['cs_topic'] }}</td>
+                    <td>{{ row['cs_level'] }}</td>
+                    <td>{{ row['cs_style'] }}</td>
+                    <td>{{ row['rating'] }}</td>
+                    <td><button style="width: fit-content;" class="btn btn-block btn-dark  mybtn link" onclick="rcopenModal(this)">Rating change</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- The Modal -->
+    <div id="rc_modal" class="rc_modal">
+        <div class="rc_modal_content">
+            <span onclick="rccloseModal()" style="float:right;cursor:pointer;">&times;</span>
+            <form id="ratingupdate" action="/log_update" method="post">
+                <input type="hidden" id="user_id" name="user_id" value="{{ user_num }}">
+                <input type="hidden" id="rc_modal_item_id" name="rc_modal_item_id">
+                <input type="hidden" id="rc_modal_cs_title_input" name="rc_modal_cs_title_input">
+                <input type="hidden" id="rc_modal_cs_category_input" name="rc_modal_cs_category_input">
+                <input type="hidden" id="rc_modal_cs_topic_input" name="rc_modal_cs_topic_input">
+                <input type="hidden" id="rc_modal_cs_level_input" name="rc_modal_cs_level_input">
+                <input type="hidden" id="rc_modal_cs_style_input" name="rc_modal_cs_style_input">
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="item_id">Course ID</label>
+                    <span style="display: inline-block;" class="form-control" id="modal_item_id"></span>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_title">Title</label>
+                    <span style="display: inline-block;" class="form-control" id="modal_cs_title"></span>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_category">Category</label>
+                    <span style="display: inline-block;" class="form-control" id="modal_cs_category"></span>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_topic">Topic</label>
+                    <span style="display: inline-block;" class="form-control" id="modal_cs_topic"></span>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_level">Level</label>
+                    <span style="display: inline-block;" class="form-control" id="modal_cs_level"></span>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_style">Study Style</label>
+                    <span style="display: inline-block;" class="form-control" id="modal_cs_style"></span>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="rating">Rating</label>
+                    <input style="display: inline-block;" class="form-control" type="number" id="rating" name="rating" min="1" max="5" placeholder="1(Min) ~ 5(Max)">
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <button style="width: fit-content; display: flex; justify-content: center;" class="btn btn-block btn-dark  mybtn link" type="submit">Update Rating</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>    
+
+</body>
+</html>

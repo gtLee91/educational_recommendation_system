@@ -2,7 +2,7 @@ import torch
 import pandas as pd
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
-from data_pre_process import df
+from data_pre_process import seq_df
 
 def seq_dataset(df, sequence_length):
     sequences = []
@@ -11,7 +11,7 @@ def seq_dataset(df, sequence_length):
     items = []
 
     for i in range(len(df) - (sequence_length-1)):
-        sequence = df[i:i+sequence_length].drop(['user', 'item', 'cs_title', 'rating'], axis=1).values
+        sequence = df[i:i+sequence_length].drop(['user', 'item', 'cs_title', 'rating','aimscore'], axis=1).values
         label = df.iloc[i+sequence_length-1]['rating']
         user = df.iloc[i+sequence_length-1]['user']
         item = df.iloc[i+sequence_length-1]['item']
@@ -30,4 +30,4 @@ def seq_dataset(df, sequence_length):
     
     return dataset
 
-user_df_train, user_df_test = train_test_split(df, test_size=0.3, random_state=0, shuffle=False)
+user_df_train, user_df_test = train_test_split(seq_df, test_size=0.3, random_state=0, shuffle=False)

@@ -1,10 +1,9 @@
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from merge_data import merged_df
-
+from merge_data import seq_merged_df
 
 def pre_process(df):
-
     cs_category_values = ['ielts', 'pte']
     cs_topic_values = ['writing', 'speaking', 'reading', 'listening', 'vocabulary', 'grammar']
     pf_category_values = cs_category_values
@@ -47,7 +46,7 @@ def pre_process(df):
         else:
             return 59
 
-    df['age'] = df['age'].apply(generate_age)
+    #df['age'] = df['age'].apply(generate_age)
 
     label_encoder = LabelEncoder()
     # incoding
@@ -62,9 +61,9 @@ def pre_process(df):
         df['pf_level'] = label_encoder.fit_transform(df['pf_level'])
     else:
         df['pf_level'].replace({'advanced': 0, 'beginner': 1, 'intermediate': 2}, inplace=True)
-    df['gender'] = label_encoder.fit_transform(df['gender'])
+    #df['gender'] = label_encoder.fit_transform(df['gender'])
     df['aimscore'] = label_encoder.fit_transform(df['aimscore'])
-    df['age'] = label_encoder.fit_transform(df['age'])
+    #df['age'] = label_encoder.fit_transform(df['age'])
 
     #Delete Unnecessary Columns
     df.drop('cs_category', axis=1, inplace=True)
@@ -78,4 +77,7 @@ def pre_process(df):
     return df
 
 df = pre_process(merged_df)
-#print(df.head(10))
+seq_df = pre_process(seq_merged_df)
+#print(df.columns)
+#print(df.head(20))
+#print(seq_df.head(20))

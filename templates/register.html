@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Login page</title>
+</head>
+<style>
+    body{
+        background: -webkit-linear-gradient(to top, #2980b9, #6dd5fa, #ffffff); /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to top, #2980b9, #6dd5fa, #ffffff);
+        height: 100vh;
+    }
+    .myblock{
+        border:0px solid black;
+        border-radius: 4%;
+        background: rgba(0,0,0,0.5);
+        margin-top:12%;
+        padding:3%;
+    }
+    .h1{
+        margin-bottom:5% ;
+        color:#ffffff;
+    }
+    .mybtn{
+    background: rgba(0,0,0,0.5);
+    }
+</style>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-12"></div>
+            <div class="col-lg-6 col-md-6 col-sm-12 myblock">
+                <h1 class="h1">Signup Form</h1>
+                <form action="/register" method="POST" class="form-group">
+                    <div class="form-group">
+                        <input type="text" id="username" name="username" placeholder="User ID" class="form-control">
+                    </div>            
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="age" name="age" placeholder="Age" class="form-control">
+                </div>
+                <div class="form-group">
+                    <select id="gender" name="gender" placeholder="Gender" class="form-control">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="testname" name="testname" placeholder="testname" class="form-control" onchange="updateAimscoreOptions()">
+                        <option value="ielts">IELTS</option>
+                        <option value="pte">PTE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="aimscore" name="aimscore" placeholder="Aimscore" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <select id="style" name="style" placeholder="Study Style" class="form-control">
+                        <option value="example">Example</option>
+                        <option value="explanation">Explanation</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="level" name="level" placeholder="User Study Level" class="form-control">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <div class="form-group" style="background-color: #ffffff;">
+                    <label for="topic" style="margin-left: 17px;">Perferred Topic</label>
+                    <br>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="topic" value="writing" id="writing" style="margin-left: 5px;">
+                        <label class="form-check-label" for="writing" style="margin-left: 25px;">Writing</label>
+                        
+                        <input class="form-check-input" type="checkbox" name="topic" value="reading" id="reading" style="margin-left: 15px;">
+                        <label class="form-check-label" for="reading" style="margin-left: 35px;">Reading</label>
+
+                        <input class="form-check-input" type="checkbox" name="topic" value="speaking" id="speaking" style="margin-left: 15px;">
+                        <label class="form-check-label" for="speaking" style="margin-left: 35px;">Speaking</label>
+                        <br>
+                        <input class="form-check-input" type="checkbox" name="topic" value="listening" id="listening" style="margin-left: 5px;">
+                        <label class="form-check-label" for="listening" style="margin-left: 25px;">Listening</label>
+
+                        <input class="form-check-input" type="checkbox" name="topic" value="vocabulary" id="vocabulary" style="margin-left: 15px;">
+                        <label class="form-check-label" for="vocabulary" style="margin-left: 35px;">Vocabulary</label>
+
+                        <input class="form-check-input" type="checkbox" name="topic" value="grammar" id="grammar" style="margin-left: 15px;">
+                        <label class="form-check-label" for="grammar" style="margin-left: 35px;">Grammar</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-block btn-dark mybtn">Submit</button>
+                    <a href="/login" class="btn btn-block btn-dark  mybtn link">Login</a>
+                </div>
+                </form>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>    
+    <script>
+        function updateAimscoreOptions() {
+            var testnameSelect = document.getElementById('testname');
+            var aimscoreSelect = document.getElementById('aimscore');
+            var selectedTestname = testnameSelect.value;
+
+            // Remove all previous options
+            aimscoreSelect.innerHTML = '';
+
+            // Add new options based on the selected testname
+            if (selectedTestname === 'ielts') {
+                addOptions(aimscoreSelect, ['5.0', '5.5', '6.0', '6.5', '7.0', '7.5', '8.0', '8.5', '9.0']);
+            } else if (selectedTestname === 'pte') {
+                addOptions(aimscoreSelect, ['50', '58', '65', '73', '79', '83', '90']);
+            }
+        }
+
+        function addOptions(selectElement, optionsArray) {
+            for (var i = 0; i < optionsArray.length; i++) {
+                var option = document.createElement('option');
+                option.value = optionsArray[i];
+                option.text = optionsArray[i];
+                selectElement.add(option);
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        window.onload = function() {
+            // IELTS가 선택된 상태로 초기화
+            document.getElementById('testname').value = 'ielts';
+            // aimscore 옵션 업데이트
+            updateAimscoreOptions();
+        };
+    </script>
+
+</body>
+</html>

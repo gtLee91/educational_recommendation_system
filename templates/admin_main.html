@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <style>
+        body {
+            background: -webkit-linear-gradient(to top, #2980b9, #6dd5fa, #ffffff); /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to top, #2980b9, #6dd5fa, #ffffff);
+            display: flex;
+            justify-content: top;
+            flex-direction: column;
+            margin: 0;
+            margin-left: 20px;
+            margin-top: 20px;
+            height: 100%;
+        }
+        .navbar {
+            width: 100%;
+            background: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .navbar-left {
+            display: flex;
+        }
+
+        .navbar .navbar-left a {
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar .navbar-left a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .navbar .navbar-right a {
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar .navbar-right a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+            margin-top: 20px;
+        }
+        form div {
+            margin-bottom: 10px;
+        }
+        form button {
+            margin-top: 10px;
+        }
+        #content {
+            margin-top: 20px;
+            display: flex; 
+            justify-content: center; 
+            flex-direction: column;
+            align-items: center; 
+        }
+    </style>
+    <title>recommendation page</title>
+</head>
+<body>
+    <div style="margin-bottom: 2%;">
+        <h1 style="margin-bottom: 20px;">IELTS & PTE lecture recommendation system</h1>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <a href="javascript:void(0);" onclick="loadContent('/admin_home')">Home</a>
+                <a href="javascript:void(0);" onclick="loadContent('/admin_CM')">lecture Management</a>
+            </div>
+            <div class="navbar-right">
+                <a href="javascript:void(0);" onclick="logout()">Logout</a>
+            </div>
+        </nav>
+        <div id="content">
+            
+        </div>
+    </div>
+
+    <!-- jQuery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>    
+
+    <script>
+
+        var serverStatus = JSON.parse( {{ server_status | tojson | safe }});
+        if (serverStatus.status === 0) {
+            loadContent('/admin_home');
+        }
+        if(serverStatus.status === 1){
+            rs_loadContent('/admin_CM',md_sc_openModal);
+        }
+        if(serverStatus.status === 2){
+            rs_loadContent('/admin_CM',add_sc_openModal);
+        }
+        if(serverStatus.status === 3){
+            rs_loadContent('/admin_CM',del_sc_openModal);
+        }
+        
+        
+
+        function loadContent(url) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    document.getElementById('content').innerHTML = xhr.responseText;
+                } else {
+                    document.getElementById('content').innerHTML = 'Content loading failed.';
+                }
+            };
+            xhr.send();
+        }
+
+        function rs_loadContent(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    document.getElementById('content').innerHTML = xhr.responseText;
+                    // 콜백 함수 호출
+                    if (callback && typeof callback === 'function') {
+                        callback();
+                    }
+                } else {
+                    document.getElementById('content').innerHTML = 'Content loading failed.';
+                }
+            };
+            xhr.send();
+        }
+
+        function logout() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/logout', true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // 로그아웃에 성공하면 로그인 페이지로 리다이렉트 또는 새로고침
+                    window.location.href = '/login';
+                } else {
+                    console.error('로그아웃 실패');
+                }
+            };
+            xhr.send();
+        }
+
+        function admin_md_openModal(button) {
+            var row = button.closest('tr');
+            var rowData = {
+                item: row.cells[0].innerText,
+                cs_title: row.cells[1].innerText,
+                cs_category: row.cells[2].innerText,
+                cs_topic: row.cells[3].innerText,
+                cs_level: row.cells[4].innerText,
+                cs_style: row.cells[5].innerText
+            };
+
+            document.getElementById('modal_item_id').value = rowData.item;
+            document.getElementById('modal_cs_title_input').value = rowData.cs_title;
+            document.getElementById('modal_cs_category').value = rowData.cs_category;
+            document.getElementById('modal_cs_level').value = rowData.cs_level;
+            document.getElementById('modal_cs_style').value = rowData.cs_style;
+
+
+            document.getElementById('modal_cs_num').innerText = rowData.item;
+            document.getElementById('modal_cs_title').innerText = rowData.cs_title;
+                        
+
+            document.getElementById('admin_cm_md_Modal').style.display = 'block';
+        }
+
+        function admin_md_closeModal() {
+            document.getElementById('admin_cm_md_Modal').style.display = 'none';
+        }
+
+        function md_sc_openModal() {
+            document.getElementById('md_success_Modal').style.display = 'block';
+        }
+        function md_sc_closeModal() {
+            document.getElementById('md_success_Modal').style.display = 'none';
+        }
+
+        function admin_add_openModal() {
+            document.getElementById('admin_cm_add_Modal').style.display = 'block';
+        }
+        function admin_add_closeModal() {
+            document.getElementById('admin_cm_add_Modal').style.display = 'none';
+        }
+
+        function add_sc_openModal() {
+            document.getElementById('add_success_Modal').style.display = 'block';
+        }
+        function add_sc_closeModal() {
+            document.getElementById('add_success_Modal').style.display = 'none';
+        }
+
+        function admin_del_openModal(button) {
+            var row = button.closest('tr');
+            var rowData = {
+                item: row.cells[0].innerText
+            };
+
+            document.getElementById('del_modal_item_id').value = rowData.item;                        
+
+            document.getElementById('admin_cm_del_Modal').style.display = 'block';
+        }
+        function admin_del_closeModal() {
+            document.getElementById('admin_cm_del_Modal').style.display = 'none';
+        }
+
+        function del_sc_openModal() {
+            document.getElementById('del_success_Modal').style.display = 'block';
+        }
+        function del_sc_closeModal() {
+            document.getElementById('del_success_Modal').style.display = 'none';
+        }
+
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: top;
+            flex-direction: column;
+            margin: 0;
+            margin-left: 20px;
+            margin-top: 20px;
+        }
+        form div {
+            margin-bottom: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 500px; /* 너비 조정 */
+        }
+        
+        .admin_cm_md_Modal, .admin_cm_add_Modal, .admin_cm_del_Modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .md_success_Modal, .add_success_Modal, .del_success_Modal{
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .rsmodal-content, .addmodal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%; /* Could be more or less, depending on screen size */
+        }
+        .sc_modal_content, .delmodal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%; /* Could be more or less, depending on screen size */
+            text-align: center;
+        }
+        .rsclose, .sc_close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .rsclose:hover, .rsclose:focus,
+        .cs_close:hover, .cs_close:focus{
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+    
+    <title>Course information</title>
+</head>
+<body>
+    
+    <div style="margin-bottom: 5px; display: inline-flex;">
+        <h2>IELTS & PTE Lectures</h2>
+        <button style="width: fit-content; margin-left: 870px;" class="btn btn-block btn-dark  mybtn link" onclick="admin_add_openModal()">Add lecture info</button>
+    </div>
+    <div name="result_body">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Topic</th>
+                    <th>Level</th>
+                    <th>Preferred Style</th>
+                    <th>Modify</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in cm_result.iterrows() %}
+                <tr>
+                    <td>{{ row['cs_num'] }}</td>
+                    <td>{{ row['cs_title'] }}</td>
+                    <td>{{ row['cs_category'] }}</td>
+                    <td>{{ row['cs_topic'] }}</td>
+                    <td>{{ row['cs_level'] }}</td>
+                    <td>{{ row['cs_style'] }}</td>
+                    <td>
+                        <div style="display: flex; justify-content: center; align-items: center;">
+                            <button style="width: fit-content;" class="btn btn-block btn-dark  mybtn link" onclick="admin_md_openModal(this)">Modify</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; justify-content: center; align-items: center;">
+                            <button style="width: fit-content;" class="btn btn-block btn-dark  mybtn link" onclick="admin_del_openModal(this)">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- update Modal -->
+    <div id="admin_cm_md_Modal" class="admin_cm_md_Modal">
+        <div class="rsmodal-content">
+            <span onclick="admin_md_closeModal()" style="float:right;cursor:pointer;">&times;</span>
+            <form id="admin_cm_md_form" action="/admin_CM_md" method="post">
+                <input type="hidden" id="modal_item_id" name="modal_item_id">
+                <input type="hidden" id="modal_cs_title_input" name="modal_cs_title_input">
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_num">Lecture ID</label>
+                    <span style="display: inline-block;" class="form-control" id="modal_cs_num"></span>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_title">Title</label>
+                    <span style="display: inline-block;" class="form-control" id="modal_cs_title"></span>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_category">Category</label>
+                    <select id="modal_cs_category" name="modal_cs_category" placeholder="testname" class="form-control">
+                        <option value="ielts">IELTS</option>
+                        <option value="pte">PTE</option>
+                    </select>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_level">Level</label>
+                    <select id="modal_cs_level" name="modal_cs_level" placeholder="Course Level" class="form-control">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_style">Study Style</label>
+                    <select id="modal_cs_style" name="modal_cs_style" placeholder="Study Style" class="form-control">
+                        <option value="example">Example</option>
+                        <option value="explanation">Explanation</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_topic">Topic</label>
+                    <div style="height: fit-content;" class="form-control">
+                        <label><input type="checkbox" name="topic" value="writing"> writing</label>
+                        <label><input type="checkbox" name="topic" value="reading"> reading</label>
+                        <label><input type="checkbox" name="topic" value="speaking"> speaking</label><br>
+                        <label><input type="checkbox" name="topic" value="listening"> listening</label>
+                        <label><input type="checkbox" name="topic" value="vocabulary"> vocabulary</label>
+                        <label><input type="checkbox" name="topic" value="grammar"> grammar</label><br>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <button style="width: fit-content; display: flex; justify-content: center;" class="btn btn-block btn-dark  mybtn link" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- add Modal -->
+    <div id="admin_cm_add_Modal" class="admin_cm_add_Modal">
+        <div class="addmodal-content">
+            <span onclick="admin_add_closeModal()" style="float:right;cursor:pointer;">&times;</span>
+            <form id="admin_cm_add_form" action="/admin_CM_add" method="post">
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_title">Title</label>
+                    <input type="text" id="modal_cs_title" name="modal_cs_title" placeholder="Lecture title" class="form-control">
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_category">Category</label>
+                    <select id="modal_cs_category" name="modal_cs_category" placeholder="testname" class="form-control">
+                        <option value="ielts">IELTS</option>
+                        <option value="pte">PTE</option>
+                    </select>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_level">Level</label>
+                    <select id="modal_cs_level" name="modal_cs_level" placeholder="Course Level" class="form-control">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <div style="display: inline-flex;">
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_style">Study Style</label>
+                    <select id="modal_cs_style" name="modal_cs_style" placeholder="Study Style" class="form-control">
+                        <option value="example">Example</option>
+                        <option value="explanation">Explanation</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="width: 150px; text-align: center; display: inline-block;" class="form-control" for="cs_topic">Topic</label>
+                    <div style="height: fit-content;" class="form-control">
+                        <label><input type="checkbox" name="topic" value="writing"> writing</label>
+                        <label><input type="checkbox" name="topic" value="reading"> reading</label>
+                        <label><input type="checkbox" name="topic" value="speaking"> speaking</label><br>
+                        <label><input type="checkbox" name="topic" value="listening"> listening</label>
+                        <label><input type="checkbox" name="topic" value="vocabulary"> vocabulary</label>
+                        <label><input type="checkbox" name="topic" value="grammar"> grammar</label><br>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <button style="width: fit-content; display: flex; justify-content: center;" class="btn btn-block btn-dark  mybtn link" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- del Modal -->
+    <div id="admin_cm_del_Modal" class="admin_cm_del_Modal">
+        <div class="delmodal-content">
+            <span onclick="admin_del_closeModal()" style="float:right;cursor:pointer;">&times;</span>
+            <form id="admin_cm_del_form" action="/admin_CM_del" method="post">
+                <input type="hidden" id="del_modal_item_id" name="del_modal_item_id">
+                <h3>Do you want to delete this course information?</h3>
+                <div style="display: flex; justify-content: space-between; margin-left: 20%; margin-right: 20%;">
+                    <button style="width: 200px; display: flex; justify-content: center;" class="btn btn-block btn-dark  mybtn link" type="submit">Yes</button>
+                    <button style="width: 200px; display: flex; justify-content: center;" class="btn btn-block btn-dark  mybtn link" type="button" onclick="admin_del_closeModal()">No</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="md_success_Modal" class="md_success_Modal" style="display: none">
+        <div class="sc_modal_content">
+            <span onclick="md_sc_closeModal()" style="float:right;cursor:pointer;">&times;</span>
+            <div>
+                <h2>Course information update Success!!</h2>
+            </div>
+            <div style="display: flex; justify-content: center;">
+                <button style="width: fit-content;" class="btn btn-block btn-dark  mybtn link" onclick="md_sc_closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add_success_Modal" class="add_success_Modal" style="display: none">
+        <div class="sc_modal_content">
+            <span onclick="add_sc_closeModal()" style="float:right;cursor:pointer;">&times;</span>
+            <div>
+                <h2>Course information add Success!!</h2>
+            </div>
+            <div style="display: flex; justify-content: center;">
+                <button style="width: fit-content;" class="btn btn-block btn-dark  mybtn link" onclick="add_sc_closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="del_success_Modal" class="del_success_Modal" style="display: none">
+        <div class="sc_modal_content">
+            <span onclick="del_sc_closeModal()" style="float:right;cursor:pointer;">&times;</span>
+            <div>
+                <h2>Course information delete Success!!</h2>
+            </div>
+            <div style="display: flex; justify-content: center;">
+                <button style="width: fit-content;" class="btn btn-block btn-dark  mybtn link" onclick="del_sc_closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>    
+
+</body>
+</html>
