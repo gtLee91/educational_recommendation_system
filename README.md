@@ -79,7 +79,7 @@ This project utilises meta-learning, deep learning and reinforcement learning to
 4. Select 'Import from Self-Contained File' option and select SQL file.<br>
 ![MySQL Data import](images/setup3.png)
 
-5. Select schema from 'Default Target Scheme'; if there is no existing Scheme, click the 'new' button to create a new schema.<br>
+5. Select schema from 'Default Target Schema'; if there is no existing Schema, click the 'new' button to create a new schema.<br>
 ![MySQL Data import](images/setup4.png)
 
 6. Finally, click the 'start import' button.<br>
@@ -87,11 +87,18 @@ This project utilises meta-learning, deep learning and reinforcement learning to
 
 ![MySQL Data import](images/setup6.png)
 
+## Attention
+To actually use this code for the recommendation system, you need to input your MYSQL server connection information into the "db_uri" variable in the format of <br>
+**"mysql+mysqlconnector://(username):(password)@(hostname):(port number)/(Schema name)" <br>**
+as shown in the diagram below. <br>
+**You must modify the "db_uri" variable in the files 'merge_data.py', 'MAML_part.py', 'ts_testing.py', 'web_app_run.py', 'web_profile.py', 'web_log.py', and 'web_admin_CM.py'.<br>**
 
+![MySQL Data import](images/attention.png)
 
 ## if you have data load problem
-If you cannot access the database and retrieve the data, you can use a CSV file to load the data.
+If you cannot access the database and retrieve the data, you can load the data from a CSV file.
 If you replace the code in merge_data.py with the following, you can load the data from a CSV file.
+**However, when you load a CSV file, the web application's features and some systems that use MYSQL will not work.**
 
 ```
   import pandas as pd
@@ -136,13 +143,7 @@ If you replace the code in merge_data.py with the following, you can load the da
   seq_merged_df = seq_merged_df.reset_index(drop=True)
 
 ```
-## Attention
-To actually use this code for the recommendation system, you need to input your MYSQL server connection information into the "db_uri" variable in the format of <br>
-"mysql+mysqlconnector://(username):(password)@(hostname):(port number)/(Schema name)" <br>
-as shown in the diagram below. <br>
-You must modify the "db_uri" variable in the files 'merge_data.py', 'MAML_part.py', 'ts_testing.py', 'web_app_run.py', 'web_profile.py', 'web_log.py', and 'web_admin_CM.py'.<br>
 
-![MySQL Data import](images/attention.png)
 
 
 ## Training and Evaluation MAML model
